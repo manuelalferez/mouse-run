@@ -19,8 +19,8 @@ A continuación se le mide el rendimiento.
 
 Toda la información se encuentra en los dos guiones siguientes: 
 
-* [Guión A](https://github.com/manuelalferez/mouse-run/blob/master/guion-a.pdf)
-* [Guión B](https://github.com/manuelalferez/mouse-run/blob/master/guion-b.pdf)
+* [Guión A](https://github.com/manuelalferez/mouse-run/blob/master/doc/guion-a.pdf)
+* [Guión B](https://github.com/manuelalferez/mouse-run/blob/master/doc/guion-b.pdf)
 
 
 
