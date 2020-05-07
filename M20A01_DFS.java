@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-public class M20A01_DFS extends Mouse
-{
+public class M20A01_DFS extends Mouse {
     private static final int MOTIONLESS = -1;
     private Grid lastGrid;
     private HashMap<Pair<Integer, Integer>, Grid> gridsVisited;
@@ -22,8 +21,7 @@ public class M20A01_DFS extends Mouse
     private Grid meetingPoint;
     private boolean meetingPointUsed;
 
-    public M20A01_DFS()
-    {
+    public M20A01_DFS() {
         super("M20A01_DFS");
         gridsVisited = new HashMap<>();
         pileOfMovements = new Stack<>();
@@ -38,23 +36,18 @@ public class M20A01_DFS extends Mouse
      * @brief //TODO Detallar la estrategia que define la función
      */
     @Override
-    public int move(Grid currentGrid, Cheese cheese)
-    {
+    public int move(Grid currentGrid, Cheese cheese) {
         Grid cheeseGrid = new Grid(cheese.getX(), cheese.getY());
-        if (!path.isEmpty())
-        {
+        if (!path.isEmpty()) {
             int movement = path.get(0);
             path.remove(0);
             return movement;
-        } else
-        {
-            if (visited(cheeseGrid))
-            {
-                if (!pathUsed)
-                {
+        } else {
+            if (visited(cheeseGrid)) {
+                if (!pathUsed) {
                     meetingPoint = currentGrid;
                     System.out.println("Meet point " + currentGrid.getX() + "/" + currentGrid.getY());
-                    meetingPointUsed=false;
+                    meetingPointUsed = false;
                 }
                 addVisitedGrid(currentGrid);
 
@@ -63,35 +56,29 @@ public class M20A01_DFS extends Mouse
                 path.remove(0);
                 pathUsed = true;
                 return movement;
-            } else
-            {
-                if (pathUsed && !meetingPointUsed)
-                {
+            } else {
+                // Volver a la casilla donde había empezado a buscar el queso, para empezar a explorar de nuevo
+                if (pathUsed && !meetingPointUsed) {
                     System.out.println("Estoy perdido");
                     System.out.println("Meet point " + meetingPoint.getX() + "/" + meetingPoint.getY());
                     path = getPath(currentGrid, meetingPoint);
-                    meetingPointUsed=true;
+                    meetingPointUsed = true;
                     int movement = path.get(0);
                     path.remove(0);
                     return movement;
-                } else
-                {
+                } else { // Exploración
                     int movement = getMovement(currentGrid);
-                    if (movement != MOTIONLESS)
-                    {
+                    if (movement != MOTIONLESS) {
                         lastGrid = currentGrid;
                         pileOfMovements.push(getContraryMovement(movement));
                         addVisitedGrid(currentGrid);
                         return movement;
-                    } else
-                    {
+                    } else {
                         lastGrid = currentGrid;
                         addVisitedGrid(currentGrid);
-                        if (!pileOfMovements.empty())
-                        {
+                        if (!pileOfMovements.empty()) {
                             return pileOfMovements.pop();
-                        } else
-                        {
+                        } else {
                             int move = getOut(currentGrid);
                             pileOfMovements.push(getContraryMovement(move));
                             return move;
@@ -110,8 +97,7 @@ public class M20A01_DFS extends Mouse
      * @return Una pila de movimiento hasta el queso
      * @brief Analizar los posibles caminos hasta llegar al queso
      */
-    private ArrayList<Integer> getPath(Grid currentGrid, Grid cheeseGrid)
-    {
+    private ArrayList<Integer> getPath(Grid currentGrid, Grid cheeseGrid) {
         nodesVisited = new HashMap<>();
         Stack<Grid> parentsGrid = new Stack<>();
         ArrayList<Integer> buildingPath = new ArrayList<>();
@@ -119,49 +105,47 @@ public class M20A01_DFS extends Mouse
         addVisitedNode(parentsGrid.peek());
         Grid nextGrid;
 
-        while (notEqual(parentsGrid.peek(), cheeseGrid))
-        {
+        while (notEqual(parentsGrid.peek(), cheeseGrid)) {
             if (notEqual(parentsGrid.peek(), currentGrid))
                 addVisitedNode(parentsGrid.peek());
             //System.out.println("Size pila: " + parentsGrid.size());
-            if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP)) && visited(getDestinationGrid(parentsGrid.peek(), UP)))
-            {
+            if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP)) &&
+                    visited(getDestinationGrid(parentsGrid.peek(), UP))) {
                 System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP");
 
                 nextGrid = getEndGrid(parentsGrid.peek(), UP);
                 parentsGrid.push(nextGrid);
                 buildingPath.add(UP);
 
-               // System.out.println(parentsGrid.size());
-            } else if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT)) && visited(getDestinationGrid(parentsGrid.peek(), RIGHT)))
-            {
+                // System.out.println(parentsGrid.size());
+            } else if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT)) &&
+                    visited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
                 System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT");
 
                 nextGrid = getEndGrid(parentsGrid.peek(), RIGHT);
                 parentsGrid.push(nextGrid);
                 buildingPath.add(RIGHT);
 
-               // System.out.println(parentsGrid.size());
-            } else if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN)) && visited(getDestinationGrid(parentsGrid.peek(), DOWN)))
-            {
+                // System.out.println(parentsGrid.size());
+            } else if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN)) &&
+                    visited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
                 System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN");
 
                 nextGrid = getEndGrid(parentsGrid.peek(), DOWN);
                 parentsGrid.push(nextGrid);
                 buildingPath.add(DOWN);
 
-               // System.out.println(parentsGrid.size());
-            } else if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT)) && visited(getDestinationGrid(parentsGrid.peek(), LEFT)))
-            {
+                // System.out.println(parentsGrid.size());
+            } else if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT)) &&
+                    visited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
                 System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT");
 
                 nextGrid = getEndGrid(parentsGrid.peek(), LEFT);
                 parentsGrid.push(nextGrid);
                 buildingPath.add(LEFT);
 
-               // System.out.println(parentsGrid.size());
-            } else
-            {
+                // System.out.println(parentsGrid.size());
+            } else {
                 System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go");
                 parentsGrid.pop();
                 buildingPath.remove(buildingPath.size() - 1);
@@ -172,8 +156,7 @@ public class M20A01_DFS extends Mouse
         return buildingPath;
     }
 
-    public boolean notEqual(Grid first, Grid second)
-    {
+    public boolean notEqual(Grid first, Grid second) {
         return first.getX() != second.getX() || first.getY() != second.getY();
     }
 
@@ -182,8 +165,7 @@ public class M20A01_DFS extends Mouse
      * @return True si el nodo no ha sido visitado
      * @brief Informa si el nodo está en nodosVisitados
      */
-    public boolean nodeNotVisited(Grid node)
-    {
+    public boolean nodeNotVisited(Grid node) {
         Pair<Integer, Integer> pair = new Pair<>(node.getX(), node.getY());
         return !nodesVisited.containsKey(pair);
     }
@@ -194,8 +176,7 @@ public class M20A01_DFS extends Mouse
      * @return Un movimiento
      * @brief Dadas dos casillas devuelve el movimiento necesario para llegar de 'first' a 'end'
      */
-    private int getMovementToReach(Grid first, Grid end)
-    {
+    private int getMovementToReach(Grid first, Grid end) {
         if (end == getDestinationGrid(first, UP))
             return UP;
         if (end == getDestinationGrid(first, DOWN))
@@ -213,16 +194,19 @@ public class M20A01_DFS extends Mouse
      * - La casilla a la que el ratón se mueve es distinta de la que viene
      * - Que el ratón pueda realizar el movimiento, es decir, no existan muros en la dirección a la que se mueve
      */
-    private int getMovement(Grid currentGrid)
-    {
+    private int getMovement(Grid currentGrid) {
         int result = MOTIONLESS;
-        if (currentGrid.canGoUp() && isNotLastGrid(currentGrid, this.lastGrid, UP) && !visited(getDestinationGrid(currentGrid, UP)))
+        if (currentGrid.canGoUp() && isNotLastGrid(currentGrid, this.lastGrid, UP) &&
+                !visited(getDestinationGrid(currentGrid, UP)))
             result = Mouse.UP;
-        else if (currentGrid.canGoRight() && isNotLastGrid(currentGrid, this.lastGrid, RIGHT) && !visited(getDestinationGrid(currentGrid, RIGHT)))
+        else if (currentGrid.canGoRight() && isNotLastGrid(currentGrid, this.lastGrid, RIGHT) &&
+                !visited(getDestinationGrid(currentGrid, RIGHT)))
             result = Mouse.RIGHT;
-        else if (currentGrid.canGoDown() && isNotLastGrid(currentGrid, this.lastGrid, DOWN) && !visited(getDestinationGrid(currentGrid, DOWN)))
+        else if (currentGrid.canGoDown() && isNotLastGrid(currentGrid, this.lastGrid, DOWN) &&
+                !visited(getDestinationGrid(currentGrid, DOWN)))
             result = Mouse.DOWN;
-        else if (currentGrid.canGoLeft() && isNotLastGrid(currentGrid, this.lastGrid, LEFT) && !visited(getDestinationGrid(currentGrid, LEFT)))
+        else if (currentGrid.canGoLeft() && isNotLastGrid(currentGrid, this.lastGrid, LEFT) &&
+                !visited(getDestinationGrid(currentGrid, LEFT)))
             result = Mouse.LEFT;
 
         return result;
@@ -233,8 +217,7 @@ public class M20A01_DFS extends Mouse
      * @return Un movimiento
      * @brief Se proporciona un movimiento, cuando tenemos la pila vacía, que inicia la salida del ratón
      */
-    private int getOut(Grid currentGrid)
-    {
+    private int getOut(Grid currentGrid) {
         if (currentGrid.canGoUp() && isNotLastGrid(currentGrid, this.lastGrid, UP))
             return Mouse.UP;
         else if (currentGrid.canGoLeft() && isNotLastGrid(currentGrid, this.lastGrid, LEFT))
@@ -245,8 +228,7 @@ public class M20A01_DFS extends Mouse
             return Mouse.RIGHT;
     }
 
-    public boolean isNotLastGrid(Grid currentGrid, Grid lastGrid, int direction)
-    {
+    public boolean isNotLastGrid(Grid currentGrid, Grid lastGrid, int direction) {
         if (lastGrid == null)
             return false;
 
@@ -255,21 +237,17 @@ public class M20A01_DFS extends Mouse
         return (lastGrid.getX() != destinationGrid.getX() || lastGrid.getY() != destinationGrid.getY());
     }
 
-    void addVisitedGrid(Grid currentGrid)
-    {
+    void addVisitedGrid(Grid currentGrid) {
         boolean isGrid = gridsVisited.containsKey(new Pair<>(currentGrid.getX(), currentGrid.getY()));
-        if (!isGrid)
-        {
+        if (!isGrid) {
             gridsVisited.put(new Pair<>(currentGrid.getX(), currentGrid.getY()), currentGrid);
             incExploredGrids();
         }
     }
 
-    void addVisitedNode(Grid node)
-    {
+    void addVisitedNode(Grid node) {
         boolean isGrid = nodesVisited.containsKey(new Pair<>(node.getX(), node.getY()));
-        if (!isGrid)
-        {
+        if (!isGrid) {
             nodesVisited.put(new Pair<>(node.getX(), node.getY()), node);
         }
     }
@@ -283,8 +261,7 @@ public class M20A01_DFS extends Mouse
      * - DOWN -> UP
      * - RIGHT -> LEFT
      */
-    int getContraryMovement(int movement)
-    {
+    int getContraryMovement(int movement) {
         if (movement % 2 == 0)
             movement = movement - 1;
         else
@@ -297,8 +274,7 @@ public class M20A01_DFS extends Mouse
      * @return True si la casilla es una celda visitada
      * @brief Procesa si la casilla está en celdasVisitadas
      */
-    public boolean visited(Grid grid)
-    {
+    public boolean visited(Grid grid) {
         Pair<Integer, Integer> pair = new Pair<>(grid.getX(), grid.getY());
         return gridsVisited.containsKey(pair);
     }
@@ -309,13 +285,11 @@ public class M20A01_DFS extends Mouse
      * @return Casilla destino
      * @brief Calcula la casilla destino después de aplicar una dirección sobre una casilla
      */
-    public Grid getDestinationGrid(Grid currentGrid, int direction)
-    {
+    public Grid getDestinationGrid(Grid currentGrid, int direction) {
         int x = currentGrid.getX();
         int y = currentGrid.getY();
 
-        switch (direction)
-        {
+        switch (direction) {
             case Mouse.UP:
                 y += 1;
                 break;
@@ -336,13 +310,11 @@ public class M20A01_DFS extends Mouse
     }
 
 
-    public Grid getEndGrid(Grid first, int direction)
-    {
+    public Grid getEndGrid(Grid first, int direction) {
         int x = first.getX();
         int y = first.getY();
 
-        switch (direction)
-        {
+        switch (direction) {
             case Mouse.UP:
                 y += 1;
                 break;
@@ -366,8 +338,7 @@ public class M20A01_DFS extends Mouse
      * @brief Método que se llama cuando el ratón pisa una bomba
      */
     @Override
-    public void respawned()
-    {
+    public void respawned() {
         pileOfMovements.clear();
     }
 
@@ -375,8 +346,7 @@ public class M20A01_DFS extends Mouse
      * @brief Método que se llama cuando aparece un nuevo queso
      */
     @Override
-    public void newCheese()
-    {
+    public void newCheese() {
         path.clear();
     }
 }
