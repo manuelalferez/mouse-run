@@ -129,10 +129,14 @@ public class M20A01_GRE extends Mouse {
         return buildingPath;
     }
 
+    private int getManhattan(Grid currentGrid, Grid cheeseGrid) {
+        return Math.abs(currentGrid.getX() - cheeseGrid.getX()) + Math.abs(currentGrid.getY() - cheeseGrid.getY());
+    }
+
     /**
-     * @brief Encontrar una casilla aún sin explorar
      * @param currentGrid La casilla en la que nos encontramos
      * @return Un camino hacia una casilla sin explorar
+     * @brief Encontrar una casilla aún sin explorar
      */
     private ArrayList<Integer> goToUntappedGrid(Grid currentGrid) {
         nodesVisited = new HashMap<>();
