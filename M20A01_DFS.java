@@ -18,7 +18,6 @@ public class M20A01_DFS extends Mouse {
     private HashMap<Pair<Integer, Integer>, Grid> nodesVisited;
     private ArrayList<Integer> path;
     private boolean pathUsed;
-    private Grid meetingPoint;
 
     public M20A01_DFS() {
         super("M20A01_DFS");
@@ -43,10 +42,6 @@ public class M20A01_DFS extends Mouse {
             return movement;
         } else {
             if (visited(cheeseGrid)) { // Hay que ir hacia el queso
-                if (!pathUsed) { //TODO ERROR: Mejor eliminar esto e implementar una búsqueda de una casilla libre
-                    meetingPoint = currentGrid;
-                    System.out.println("Meet point " + currentGrid.getX() + "/" + currentGrid.getY());
-                }
                 addVisitedGrid(currentGrid);
 
                 path = getPath(currentGrid, cheeseGrid);
@@ -59,8 +54,7 @@ public class M20A01_DFS extends Mouse {
                 // Volver a la casilla donde había empezado a buscar el queso, para empezar a explorar de nuevo
                 if (pathUsed) {
                     System.out.println("Hacia casilla sin explorar");
-                    System.out.println("Meet point " + meetingPoint.getX() + "/" + meetingPoint.getY());
-                    path = getPath(currentGrid, meetingPoint);
+                    path = goToUntappedGrid(currentGrid);
                     pathUsed = false;
                     int movement = path.get(0);
                     path.remove(0);
@@ -166,45 +160,49 @@ public class M20A01_DFS extends Mouse {
         while (visited(parentsGrid.peek())) {
             if (notEqual(parentsGrid.peek(), currentGrid))
                 addVisitedNode(parentsGrid.peek());
-            //System.out.println("Size pila: " + parentsGrid.size());
-            if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP)) &&
-                    visited(getDestinationGrid(parentsGrid.peek(), UP))) {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP");
-
-                nextGrid = getEndGrid(parentsGrid.peek(), UP);
-                parentsGrid.push(nextGrid);
+            System.out.println("Size pila: " + parentsGrid.size());
+            if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP))) {
+                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP");
                 buildingPath.add(UP);
-
+                if (visited(getDestinationGrid(parentsGrid.peek(), UP))) {
+                    nextGrid = getEndGrid(parentsGrid.peek(), UP);
+                    parentsGrid.push(nextGrid);
+                } else {
+                    break;
+                }
                 // System.out.println(parentsGrid.size());
-            } else if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT)) &&
-                    visited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT");
-
-                nextGrid = getEndGrid(parentsGrid.peek(), RIGHT);
-                parentsGrid.push(nextGrid);
+            } else if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
+                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT");
                 buildingPath.add(RIGHT);
-
+                if (visited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
+                    nextGrid = getEndGrid(parentsGrid.peek(), RIGHT);
+                    parentsGrid.push(nextGrid);
+                } else {
+                    break;
+                }
                 // System.out.println(parentsGrid.size());
-            } else if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN)) &&
-                    visited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN");
-
-                nextGrid = getEndGrid(parentsGrid.peek(), DOWN);
-                parentsGrid.push(nextGrid);
+            } else if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
+                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN");
                 buildingPath.add(DOWN);
-
+                if (visited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
+                    nextGrid = getEndGrid(parentsGrid.peek(), DOWN);
+                    parentsGrid.push(nextGrid);
+                } else {
+                    break;
+                }
                 // System.out.println(parentsGrid.size());
-            } else if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT)) &&
-                    visited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT");
-
-                nextGrid = getEndGrid(parentsGrid.peek(), LEFT);
-                parentsGrid.push(nextGrid);
+            } else if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
+                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT");
                 buildingPath.add(LEFT);
-
+                if (visited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
+                    nextGrid = getEndGrid(parentsGrid.peek(), LEFT);
+                    parentsGrid.push(nextGrid);
+                } else {
+                    break;
+                }
                 // System.out.println(parentsGrid.size());
             } else {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go");
+                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go");
                 parentsGrid.pop();
                 buildingPath.remove(buildingPath.size() - 1);
             }
