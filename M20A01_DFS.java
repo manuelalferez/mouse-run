@@ -43,7 +43,7 @@ public class M20A01_DFS extends Mouse {
             return movement;
         } else {
             if (visited(cheeseGrid)) { // Hay que ir hacia el queso
-                if (!pathUsed) {
+                if (!pathUsed) { //TODO ERROR: Mejor eliminar esto e implementar una búsqueda de una casilla libre
                     meetingPoint = currentGrid;
                     System.out.println("Meet point " + currentGrid.getX() + "/" + currentGrid.getY());
                 }
@@ -58,7 +58,7 @@ public class M20A01_DFS extends Mouse {
                 // Camino hacia casilla sin explorar
                 // Volver a la casilla donde había empezado a buscar el queso, para empezar a explorar de nuevo
                 if (pathUsed) {
-                    System.out.println("Estoy perdido, tamaño de path: " + path.size());
+                    System.out.println("Hacia casilla sin explorar");
                     System.out.println("Meet point " + meetingPoint.getX() + "/" + meetingPoint.getY());
                     path = getPath(currentGrid, meetingPoint);
                     pathUsed = false;
@@ -68,6 +68,7 @@ public class M20A01_DFS extends Mouse {
                 } else { // Exploración
                     int movement = getMovement(currentGrid);
                     if (movement != MOTIONLESS) {
+                        System.out.println("Explorando");
                         lastGrid = currentGrid;
                         pileOfMovements.push(getContraryMovement(movement));
                         addVisitedGrid(currentGrid);
@@ -78,8 +79,7 @@ public class M20A01_DFS extends Mouse {
                         if (!pileOfMovements.empty()) {
                             System.out.println("Marcha atrás");
                             return pileOfMovements.pop();
-                        } else {
-                            System.out.println("Explorando");
+                        } else { // Salida
                             int move = getOut(currentGrid);
                             pileOfMovements.push(getContraryMovement(move));
                             return move;
@@ -110,7 +110,7 @@ public class M20A01_DFS extends Mouse {
             //System.out.println("Size pila: " + parentsGrid.size());
             if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), UP))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP");
 
                 nextGrid = getEndGrid(parentsGrid.peek(), UP);
                 parentsGrid.push(nextGrid);
@@ -119,7 +119,7 @@ public class M20A01_DFS extends Mouse {
                 // System.out.println(parentsGrid.size());
             } else if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT");
 
                 nextGrid = getEndGrid(parentsGrid.peek(), RIGHT);
                 parentsGrid.push(nextGrid);
@@ -128,7 +128,7 @@ public class M20A01_DFS extends Mouse {
                 // System.out.println(parentsGrid.size());
             } else if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN");
 
                 nextGrid = getEndGrid(parentsGrid.peek(), DOWN);
                 parentsGrid.push(nextGrid);
@@ -137,7 +137,7 @@ public class M20A01_DFS extends Mouse {
                 // System.out.println(parentsGrid.size());
             } else if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT");
 
                 nextGrid = getEndGrid(parentsGrid.peek(), LEFT);
                 parentsGrid.push(nextGrid);
@@ -145,13 +145,72 @@ public class M20A01_DFS extends Mouse {
 
                 // System.out.println(parentsGrid.size());
             } else {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go");
                 parentsGrid.pop();
                 buildingPath.remove(buildingPath.size() - 1);
             }
         }
 
-        System.out.println("Queso encontrado\n\n");
+        System.out.println("Queso encontrado [getPath]");
+        return buildingPath;
+    }
+
+    private ArrayList<Integer> goToUntappedGrid(Grid currentGrid) {
+        nodesVisited = new HashMap<>();
+        Stack<Grid> parentsGrid = new Stack<>();
+        ArrayList<Integer> buildingPath = new ArrayList<>();
+        parentsGrid.push(currentGrid);
+        addVisitedNode(parentsGrid.peek());
+        Grid nextGrid;
+
+        while (visited(parentsGrid.peek())) {
+            if (notEqual(parentsGrid.peek(), currentGrid))
+                addVisitedNode(parentsGrid.peek());
+            //System.out.println("Size pila: " + parentsGrid.size());
+            if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP)) &&
+                    visited(getDestinationGrid(parentsGrid.peek(), UP))) {
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP");
+
+                nextGrid = getEndGrid(parentsGrid.peek(), UP);
+                parentsGrid.push(nextGrid);
+                buildingPath.add(UP);
+
+                // System.out.println(parentsGrid.size());
+            } else if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT)) &&
+                    visited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT");
+
+                nextGrid = getEndGrid(parentsGrid.peek(), RIGHT);
+                parentsGrid.push(nextGrid);
+                buildingPath.add(RIGHT);
+
+                // System.out.println(parentsGrid.size());
+            } else if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN)) &&
+                    visited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN");
+
+                nextGrid = getEndGrid(parentsGrid.peek(), DOWN);
+                parentsGrid.push(nextGrid);
+                buildingPath.add(DOWN);
+
+                // System.out.println(parentsGrid.size());
+            } else if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT)) &&
+                    visited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT");
+
+                nextGrid = getEndGrid(parentsGrid.peek(), LEFT);
+                parentsGrid.push(nextGrid);
+                buildingPath.add(LEFT);
+
+                // System.out.println(parentsGrid.size());
+            } else {
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go");
+                parentsGrid.pop();
+                buildingPath.remove(buildingPath.size() - 1);
+            }
+        }
+
+        System.out.println("Casilla sin explorar encontrada [goToUntappedGrid]");
         return buildingPath;
     }
 
