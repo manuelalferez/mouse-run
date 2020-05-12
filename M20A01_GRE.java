@@ -33,17 +33,16 @@ public class M20A01_GRE extends Mouse {
      * @param currentGrid Casilla donde el ratón está
      * @param cheese      El queso a buscar
      * @return Un movimiento
-     * @brief //TODO Detallar la estrategia que define la función
      */
     @Override
     public int move(Grid currentGrid, Cheese cheese) {
         Grid cheeseGrid = new Grid(cheese.getX(), cheese.getY());
-        if (!path.isEmpty()) {
+        if (!path.isEmpty()) { // Caso 0: Tenemos un camino hacia el queso o casilla sin explorar
             int movement = path.get(0);
             path.remove(0);
             return movement;
         } else {
-            if (visited(cheeseGrid)) { // Hay que ir hacia el queso
+            if (visited(cheeseGrid)) { // Caso 1: Queso está en casilla explorada, hay camino
                 addVisitedGrid(currentGrid);
                 path = getPath(currentGrid, cheeseGrid);
                 int movement = path.get(0);
@@ -51,16 +50,15 @@ public class M20A01_GRE extends Mouse {
                 pathUsed = true;
                 return movement;
             } else {
-                // Camino hacia casilla sin explorar
-                // Volver a la casilla donde había empezado a buscar el queso, para empezar a explorar de nuevo
-                if (pathUsed) {
+                if (pathUsed) { // Caso 2:  Queso en casilla sin explorar, continuar explorando a partir de una casilla
+                    // sin explorar
                     path = goToUntappedGrid(currentGrid, cheeseGrid);
                     pathUsed = false;
                     untappedUsed = true;
                     int movement = path.get(0);
                     path.remove(0);
                     return movement;
-                } else { // Exploración
+                } else { // caso 3: Exploración
                     int movement = getMovement(currentGrid);
                     if (movement != MOTIONLESS) {
                         System.out.println("Explorando");
@@ -68,22 +66,23 @@ public class M20A01_GRE extends Mouse {
                         pileOfMovements.push(getContraryMovement(movement));
                         addVisitedGrid(currentGrid);
                         return movement;
-                    } else {
+                    } else { // Caso 4: Estamos situados en una casilla donde nuestro alrededor está explorado
                         lastGrid = currentGrid;
                         addVisitedGrid(currentGrid);
-                        if (!pileOfMovements.empty()) {
+                        if (!pileOfMovements.empty()) { // Caso 4.1: Si hay pila de movimiento, backtraking
                             System.out.println(pathUsed);
                             if (!untappedUsed) {
                                 System.out.println("Marcha atrás");
                                 return pileOfMovements.pop();
-                            } else {
+                            } else { // Caso 4.1.1: Backtraking no se puede usar, ya que la pila no se corresponde con
+                                // la posición actual, saltamos a otra posición del laberinto y seguimos explorando
                                 path = goToUntappedGrid(currentGrid, cheeseGrid);
                                 pathUsed = false;
                                 int mov = path.get(0);
                                 path.remove(0);
                                 return mov;
                             }
-                        } else { // Salida
+                        } else { // Caso 5: Al inicio del juego
                             addVisitedGrid(currentGrid);
                             int move = getOut(currentGrid);
                             pileOfMovements.push(getContraryMovement(move));
@@ -99,7 +98,7 @@ public class M20A01_GRE extends Mouse {
      * @param currentGrid     Posición donde se encuentra el ratón
      * @param destinationGrid Posición de la casilla destino (normalmente la del queso)
      * @return Una pila de movimiento hasta el queso
-     * @brief Analizar los posibles caminos hasta llegar al queso
+     * @brief Analizar los posibles caminos hasta llegar al queso, guiado por la heurística de Manhattan
      */
     private ArrayList<Integer> getPath(Grid currentGrid, Grid destinationGrid) {
         nodesVisited = new HashMap<>();
@@ -186,7 +185,7 @@ public class M20A01_GRE extends Mouse {
      * @param currentGrid La casilla en la que nos encontramos
      * @param cheeseGrid
      * @return Un camino hacia una casilla sin explorar
-     * @brief Encontrar una casilla aún sin explorar
+     * @brief Encontrar una casilla aún sin explorar, guiando la búsqueda con la heurística de Manhattan
      */
     private ArrayList<Integer> goToUntappedGrid(Grid currentGrid, Grid cheeseGrid) {
         nodesVisited = new HashMap<>();
