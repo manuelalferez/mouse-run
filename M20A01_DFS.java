@@ -19,7 +19,6 @@ public class M20A01_DFS extends Mouse {
     private ArrayList<Integer> path;
     private boolean pathUsed;
     private Grid meetingPoint;
-    private boolean meetingPointUsed;
 
     public M20A01_DFS() {
         super("M20A01_DFS");
@@ -43,11 +42,10 @@ public class M20A01_DFS extends Mouse {
             path.remove(0);
             return movement;
         } else {
-            if (visited(cheeseGrid)) {
+            if (visited(cheeseGrid)) { // Hay que ir hacia el queso
                 if (!pathUsed) {
                     meetingPoint = currentGrid;
                     System.out.println("Meet point " + currentGrid.getX() + "/" + currentGrid.getY());
-                    meetingPointUsed = false;
                 }
                 addVisitedGrid(currentGrid);
 
@@ -57,12 +55,13 @@ public class M20A01_DFS extends Mouse {
                 pathUsed = true;
                 return movement;
             } else {
+                // Camino hacia casilla sin explorar
                 // Volver a la casilla donde había empezado a buscar el queso, para empezar a explorar de nuevo
-                if (pathUsed && !meetingPointUsed) {
-                    System.out.println("Estoy perdido");
+                if (pathUsed) {
+                    System.out.println("Estoy perdido, tamaño de path: " + path.size());
                     System.out.println("Meet point " + meetingPoint.getX() + "/" + meetingPoint.getY());
                     path = getPath(currentGrid, meetingPoint);
-                    meetingPointUsed = true;
+                    pathUsed = false;
                     int movement = path.get(0);
                     path.remove(0);
                     return movement;
@@ -77,27 +76,27 @@ public class M20A01_DFS extends Mouse {
                         lastGrid = currentGrid;
                         addVisitedGrid(currentGrid);
                         if (!pileOfMovements.empty()) {
+                            System.out.println("Marcha atrás");
                             return pileOfMovements.pop();
                         } else {
+                            System.out.println("Explorando");
                             int move = getOut(currentGrid);
                             pileOfMovements.push(getContraryMovement(move));
                             return move;
                         }
                     }
                 }
-
             }
         }
-
     }
 
     /**
-     * @param currentGrid Posición donde se encuentra el ratón
-     * @param cheeseGrid  Posición del queso
+     * @param currentGrid     Posición donde se encuentra el ratón
+     * @param destinationGrid Posición de la casilla destino (normalmente la del queso)
      * @return Una pila de movimiento hasta el queso
      * @brief Analizar los posibles caminos hasta llegar al queso
      */
-    private ArrayList<Integer> getPath(Grid currentGrid, Grid cheeseGrid) {
+    private ArrayList<Integer> getPath(Grid currentGrid, Grid destinationGrid) {
         nodesVisited = new HashMap<>();
         Stack<Grid> parentsGrid = new Stack<>();
         ArrayList<Integer> buildingPath = new ArrayList<>();
@@ -105,7 +104,7 @@ public class M20A01_DFS extends Mouse {
         addVisitedNode(parentsGrid.peek());
         Grid nextGrid;
 
-        while (notEqual(parentsGrid.peek(), cheeseGrid)) {
+        while (notEqual(parentsGrid.peek(), destinationGrid)) {
             if (notEqual(parentsGrid.peek(), currentGrid))
                 addVisitedNode(parentsGrid.peek());
             //System.out.println("Size pila: " + parentsGrid.size());
