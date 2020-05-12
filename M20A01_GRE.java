@@ -18,6 +18,7 @@ public class M20A01_GRE extends Mouse {
     private HashMap<Pair<Integer, Integer>, Grid> nodesVisited;
     private ArrayList<Integer> path;
     private boolean pathUsed;
+    private boolean untappedUsed;
 
     public M20A01_GRE() {
         super("M20A01_GRE");
@@ -25,6 +26,7 @@ public class M20A01_GRE extends Mouse {
         pileOfMovements = new Stack<>();
         path = new ArrayList<>();
         pathUsed = false;
+        untappedUsed = false;
     }
 
     /**
@@ -53,6 +55,8 @@ public class M20A01_GRE extends Mouse {
                 // Volver a la casilla donde había empezado a buscar el queso, para empezar a explorar de nuevo
                 if (pathUsed) {
                     path = goToUntappedGrid(currentGrid);
+                    pathUsed = false;
+                    untappedUsed = true;
                     int movement = path.get(0);
                     path.remove(0);
                     return movement;
@@ -68,8 +72,17 @@ public class M20A01_GRE extends Mouse {
                         lastGrid = currentGrid;
                         addVisitedGrid(currentGrid);
                         if (!pileOfMovements.empty()) {
-                            System.out.println("Marcha atrás");
-                            return pileOfMovements.pop();
+                            System.out.println(pathUsed);
+                            if (!untappedUsed) {
+                                System.out.println("Marcha atrás");
+                                return pileOfMovements.pop();
+                            } else {
+                                path = goToUntappedGrid(currentGrid);
+                                pathUsed = false;
+                                int mov = path.get(0);
+                                path.remove(0);
+                                return mov;
+                            }
                         } else { // Salida
                             addVisitedGrid(currentGrid);
                             int move = getOut(currentGrid);
@@ -106,10 +119,10 @@ public class M20A01_GRE extends Mouse {
             minDistance = Integer.MAX_VALUE;
             if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), UP))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP\n");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP\n");
                 anyMov = true;
                 distance = getManhattan(getDestinationGrid(parentsGrid.peek(), UP), destinationGrid);
-                System.out.println("Distance: " + distance);
+                //System.out.println("Distance: " + distance);
                 if (distance < minDistance) {
                     minDistance = distance;
                     betterMov = UP;
@@ -117,10 +130,10 @@ public class M20A01_GRE extends Mouse {
             }
             if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT\n");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT\n");
                 anyMov = true;
                 distance = getManhattan(getDestinationGrid(parentsGrid.peek(), RIGHT), destinationGrid);
-                System.out.println("Distance: " + distance);
+                //System.out.println("Distance: " + distance);
                 if (distance < minDistance) {
                     minDistance = distance;
                     betterMov = RIGHT;
@@ -128,10 +141,10 @@ public class M20A01_GRE extends Mouse {
             }
             if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN\n");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN\n");
                 anyMov = true;
                 distance = getManhattan(getDestinationGrid(parentsGrid.peek(), DOWN), destinationGrid);
-                System.out.println("Distance: " + distance);
+                //System.out.println("Distance: " + distance);
                 if (distance < minDistance) {
                     minDistance = distance;
                     betterMov = DOWN;
@@ -139,22 +152,22 @@ public class M20A01_GRE extends Mouse {
             }
             if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT\n");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT\n");
                 anyMov = true;
                 distance = getManhattan(getDestinationGrid(parentsGrid.peek(), LEFT), destinationGrid);
-                System.out.println("Distance: " + distance);
+                //System.out.println("Distance: " + distance);
                 if (distance < minDistance) {
                     minDistance = distance;
                     betterMov = LEFT;
                 }
             }
             if (!anyMov) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go\n");
+                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go\n");
                 parentsGrid.pop();
                 buildingPath.remove(buildingPath.size() - 1);
             } else {
-                System.out.println("Better mov: " + betterMov);
-                System.out.println("Tamaño del camino: " + buildingPath.size());
+                //System.out.println("Better mov: " + betterMov);
+                //System.out.println("Tamaño del camino: " + buildingPath.size());
                 nextGrid = getEndGrid(parentsGrid.peek(), betterMov);
                 parentsGrid.push(nextGrid);
                 buildingPath.add(betterMov);
