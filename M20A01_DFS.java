@@ -60,7 +60,7 @@ public class M20A01_DFS extends Mouse {
                 } else { // Exploración
                     int movement = getMovement(currentGrid);
                     if (movement != MOTIONLESS) {
-                        System.out.println("Explorando");
+                        //System.out.println("Explorando");
                         lastGrid = currentGrid;
                         pileOfMovements.push(getContraryMovement(movement));
                         addVisitedGrid(currentGrid);
@@ -69,7 +69,7 @@ public class M20A01_DFS extends Mouse {
                         lastGrid = currentGrid;
                         addVisitedGrid(currentGrid);
                         if (!pileOfMovements.empty()) {
-                            System.out.println("Marcha atrás");
+                            //System.out.println("Marcha atrás");
                             return pileOfMovements.pop();
                         } else { // Salida
                             int move = getOut(currentGrid);
@@ -125,7 +125,7 @@ public class M20A01_DFS extends Mouse {
             }
         }
 
-        System.out.println("Queso encontrado [getPath]");
+        //System.out.println("Queso encontrado [getPath]");
         return buildingPath;
     }
 
@@ -183,7 +183,7 @@ public class M20A01_DFS extends Mouse {
             }
         }
 
-        System.out.println("Casilla sin explorar encontrada [goToUntappedGrid]");
+        //System.out.println("Casilla sin explorar encontrada [goToUntappedGrid]");
         return buildingPath;
     }
 
