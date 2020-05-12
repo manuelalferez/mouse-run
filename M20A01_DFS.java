@@ -43,7 +43,6 @@ public class M20A01_DFS extends Mouse {
         } else {
             if (visited(cheeseGrid)) { // Hay que ir hacia el queso
                 addVisitedGrid(currentGrid);
-
                 path = getPath(currentGrid, cheeseGrid);
                 int movement = path.get(0);
                 path.remove(0);
@@ -53,7 +52,6 @@ public class M20A01_DFS extends Mouse {
                 // Camino hacia casilla sin explorar
                 // Volver a la casilla donde había empezado a buscar el queso, para empezar a explorar de nuevo
                 if (pathUsed) {
-                    System.out.println("Hacia casilla sin explorar");
                     path = goToUntappedGrid(currentGrid);
                     pathUsed = false;
                     int movement = path.get(0);
@@ -101,45 +99,27 @@ public class M20A01_DFS extends Mouse {
         while (notEqual(parentsGrid.peek(), destinationGrid)) {
             if (notEqual(parentsGrid.peek(), currentGrid))
                 addVisitedNode(parentsGrid.peek());
-            //System.out.println("Size pila: " + parentsGrid.size());
             if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), UP))) {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP");
-
                 nextGrid = getEndGrid(parentsGrid.peek(), UP);
                 parentsGrid.push(nextGrid);
                 buildingPath.add(UP);
-
-                // System.out.println(parentsGrid.size());
             } else if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT");
-
                 nextGrid = getEndGrid(parentsGrid.peek(), RIGHT);
                 parentsGrid.push(nextGrid);
                 buildingPath.add(RIGHT);
-
-                // System.out.println(parentsGrid.size());
             } else if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN");
-
                 nextGrid = getEndGrid(parentsGrid.peek(), DOWN);
                 parentsGrid.push(nextGrid);
                 buildingPath.add(DOWN);
-
-                // System.out.println(parentsGrid.size());
             } else if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT)) &&
                     visited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT");
-
                 nextGrid = getEndGrid(parentsGrid.peek(), LEFT);
                 parentsGrid.push(nextGrid);
                 buildingPath.add(LEFT);
-
-                // System.out.println(parentsGrid.size());
             } else {
-                //System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go");
                 parentsGrid.pop();
                 buildingPath.remove(buildingPath.size() - 1);
             }
@@ -149,6 +129,11 @@ public class M20A01_DFS extends Mouse {
         return buildingPath;
     }
 
+    /**
+     * @brief Encontrar una casilla aún sin explorar
+     * @param currentGrid La casilla en la que nos encontramos
+     * @return Un camino hacia una casilla sin explorar
+     */
     private ArrayList<Integer> goToUntappedGrid(Grid currentGrid) {
         nodesVisited = new HashMap<>();
         Stack<Grid> parentsGrid = new Stack<>();
@@ -160,9 +145,7 @@ public class M20A01_DFS extends Mouse {
         while (visited(parentsGrid.peek())) {
             if (notEqual(parentsGrid.peek(), currentGrid))
                 addVisitedNode(parentsGrid.peek());
-            System.out.println("Size pila: " + parentsGrid.size());
             if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go UP");
                 buildingPath.add(UP);
                 if (visited(getDestinationGrid(parentsGrid.peek(), UP))) {
                     nextGrid = getEndGrid(parentsGrid.peek(), UP);
@@ -170,9 +153,7 @@ public class M20A01_DFS extends Mouse {
                 } else {
                     break;
                 }
-                // System.out.println(parentsGrid.size());
             } else if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go RIGHT");
                 buildingPath.add(RIGHT);
                 if (visited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
                     nextGrid = getEndGrid(parentsGrid.peek(), RIGHT);
@@ -180,9 +161,7 @@ public class M20A01_DFS extends Mouse {
                 } else {
                     break;
                 }
-                // System.out.println(parentsGrid.size());
             } else if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go DOWN");
                 buildingPath.add(DOWN);
                 if (visited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
                     nextGrid = getEndGrid(parentsGrid.peek(), DOWN);
@@ -190,9 +169,7 @@ public class M20A01_DFS extends Mouse {
                 } else {
                     break;
                 }
-                // System.out.println(parentsGrid.size());
             } else if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ", go LEFT");
                 buildingPath.add(LEFT);
                 if (visited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
                     nextGrid = getEndGrid(parentsGrid.peek(), LEFT);
@@ -200,9 +177,7 @@ public class M20A01_DFS extends Mouse {
                 } else {
                     break;
                 }
-                // System.out.println(parentsGrid.size());
             } else {
-                System.out.println("I am in " + parentsGrid.peek().getX() + "/" + parentsGrid.peek().getY() + ",can't go");
                 parentsGrid.pop();
                 buildingPath.remove(buildingPath.size() - 1);
             }
