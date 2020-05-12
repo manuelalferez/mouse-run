@@ -54,7 +54,7 @@ public class M20A01_GRE extends Mouse {
                 // Camino hacia casilla sin explorar
                 // Volver a la casilla donde había empezado a buscar el queso, para empezar a explorar de nuevo
                 if (pathUsed) {
-                    path = goToUntappedGrid(currentGrid);
+                    path = goToUntappedGrid(currentGrid, cheeseGrid);
                     pathUsed = false;
                     untappedUsed = true;
                     int movement = path.get(0);
@@ -77,7 +77,7 @@ public class M20A01_GRE extends Mouse {
                                 System.out.println("Marcha atrás");
                                 return pileOfMovements.pop();
                             } else {
-                                path = goToUntappedGrid(currentGrid);
+                                path = goToUntappedGrid(currentGrid, cheeseGrid);
                                 pathUsed = false;
                                 int mov = path.get(0);
                                 path.remove(0);
@@ -184,55 +184,69 @@ public class M20A01_GRE extends Mouse {
 
     /**
      * @param currentGrid La casilla en la que nos encontramos
+     * @param cheeseGrid
      * @return Un camino hacia una casilla sin explorar
      * @brief Encontrar una casilla aún sin explorar
      */
-    private ArrayList<Integer> goToUntappedGrid(Grid currentGrid) {
+    private ArrayList<Integer> goToUntappedGrid(Grid currentGrid, Grid cheeseGrid) {
         nodesVisited = new HashMap<>();
         Stack<Grid> parentsGrid = new Stack<>();
         ArrayList<Integer> buildingPath = new ArrayList<>();
         parentsGrid.push(currentGrid);
         addVisitedNode(parentsGrid.peek());
         Grid nextGrid;
+        int distance, minDistance;
+        int betterMov = MOTIONLESS;
+        boolean anyMov;
 
         while (visited(parentsGrid.peek())) {
             if (notEqual(parentsGrid.peek(), currentGrid))
                 addVisitedNode(parentsGrid.peek());
+            anyMov = false;
+            minDistance = Integer.MAX_VALUE;
             if (parentsGrid.peek().canGoUp() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), UP))) {
-                buildingPath.add(UP);
-                if (visited(getDestinationGrid(parentsGrid.peek(), UP))) {
-                    nextGrid = getEndGrid(parentsGrid.peek(), UP);
-                    parentsGrid.push(nextGrid);
-                } else {
-                    break;
+                anyMov = true;
+                distance = getManhattan(getDestinationGrid(parentsGrid.peek(), UP), cheeseGrid);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    betterMov = UP;
                 }
-            } else if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
-                buildingPath.add(RIGHT);
-                if (visited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
-                    nextGrid = getEndGrid(parentsGrid.peek(), RIGHT);
-                    parentsGrid.push(nextGrid);
-                } else {
-                    break;
+            }
+            if (parentsGrid.peek().canGoRight() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), RIGHT))) {
+                anyMov = true;
+                distance = getManhattan(getDestinationGrid(parentsGrid.peek(), RIGHT), cheeseGrid);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    betterMov = RIGHT;
                 }
-            } else if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
-                buildingPath.add(DOWN);
-                if (visited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
-                    nextGrid = getEndGrid(parentsGrid.peek(), DOWN);
-                    parentsGrid.push(nextGrid);
-                } else {
-                    break;
+            }
+            if (parentsGrid.peek().canGoDown() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), DOWN))) {
+                anyMov = true;
+                distance = getManhattan(getDestinationGrid(parentsGrid.peek(), DOWN), cheeseGrid);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    betterMov = DOWN;
                 }
-            } else if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
-                buildingPath.add(LEFT);
-                if (visited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
-                    nextGrid = getEndGrid(parentsGrid.peek(), LEFT);
-                    parentsGrid.push(nextGrid);
-                } else {
-                    break;
+            }
+            if (parentsGrid.peek().canGoLeft() && nodeNotVisited(getDestinationGrid(parentsGrid.peek(), LEFT))) {
+                anyMov = true;
+                distance = getManhattan(getDestinationGrid(parentsGrid.peek(), LEFT), cheeseGrid);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    betterMov = LEFT;
                 }
-            } else {
+            }
+            if (!anyMov) {
                 parentsGrid.pop();
                 buildingPath.remove(buildingPath.size() - 1);
+            } else {
+                buildingPath.add(betterMov);
+                if (visited(getDestinationGrid(parentsGrid.peek(), betterMov))) {
+                    nextGrid = getEndGrid(parentsGrid.peek(), betterMov);
+                    parentsGrid.push(nextGrid);
+                } else {
+                    break;
+                }
             }
         }
 
