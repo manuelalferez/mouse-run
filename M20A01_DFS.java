@@ -202,22 +202,6 @@ public class M20A01_DFS extends Mouse {
     }
 
     /**
-     * @param first Primera casilla
-     * @param end   Segunda casilla
-     * @return Un movimiento
-     * @brief Dadas dos casillas devuelve el movimiento necesario para llegar de 'first' a 'end'
-     */
-    private int getMovementToReach(Grid first, Grid end) {
-        if (end == getDestinationGrid(first, UP))
-            return UP;
-        if (end == getDestinationGrid(first, DOWN))
-            return DOWN;
-        if (end == getDestinationGrid(first, RIGHT))
-            return RIGHT;
-        return LEFT;
-    }
-
-    /**
      * @param currentGrid Casilla donde se encuentra el ratón
      * @return Un movimiento válido si existe, o ningún movimiento en otro caso
      * @brief Movimiento que el ratón puede realizar de acuerdo a las siguientes restricciones:
